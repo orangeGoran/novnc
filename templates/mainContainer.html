@@ -1,0 +1,240 @@
+<div >
+  <ul class="nav nav-tabs">
+    <li ng-class="{'active' : $index==selected}" ng-repeat="t in templates"><a href="" ng-click="getElements(t.id,$index)">{{t.name}}</a></li>
+
+    <li class="right"><a class="btn btn-primary" href="" ng-click="addNewTemplate()"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a></li>
+  </ul>
+</div>
+
+<div ng-if="showElements">
+  <div class="alert alert-info" role="alert">
+    <div class="container">
+      <div class="form-group col-sm-12">
+        <hr>
+        <label class="col-sm-2 control-label">Name: </label>
+        <div class="col-sm-10">
+          <h4 ng-if="!editTemplateInputs">{{templates[selected].name}}</h4>
+          <h4 ng-if="editTemplateInputs"><input type="text" ng-model="templates[selected].name" /></h4>
+
+        </div>
+      </div>
+      <div class="form-group col-sm-12">
+        <label class="col-sm-2 control-label">Vertical/Horizontal: </label>
+        <div class="col-sm-10">
+          <h4>{{templates[selected].vertical + " x " + templates[selected].horizontal }}</h4>
+        </div>
+      </div>
+      <div class="form-group col-sm-12">
+        <label class="col-sm-2 control-label">Installed PCs: </label>
+        <div class="col-sm-10">
+          <h4>{{elements.length}}</h4>
+        </div>
+      </div>
+      <div class="form-group col-sm-12">
+        <hr>
+        <a class="btn btn-danger" href="" ng-click="deleteTemplate()">Delete</a>
+        <!-- $scope.editTemplateInputs = false -->
+
+        <a ng-if="!editTemplateInputs" class="btn btn-primary pull-right" href="" ng-click="editTemplate()">Edit</a>
+        <a ng-if="editTemplateInputs" class="btn btn-warning pull-right" href="" ng-click="saveEditTemplate()">Save</a>
+
+      </div>
+    </div>
+
+
+  </div>
+
+  <div ng-repeat="n in productionItems" class="col-md-12">
+    <div  style="" class="col-md-12"> <!-- col-md-6 col-md-offset-3  -->
+      <div ng-repeat="a in n" style="padding:10px; display:inline-block; width:{{(100/horizontal) + '%'}}; height:200px" class="thumbnail">
+        <button ng-if="a.name!==undefined" type="button" class="close" data-dismiss="alert" data:ng-click="removeConnection(a.id)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <!-- {{a.name!==undefined}} -->
+        <button ng-if="a.name==undefined" type="button" class="btn btn-warning" ng-click="createElement($parent.$index, $parent.$parent.$index)">Add remote</button>
+        <button ng-if="a.name!==undefined" type="button" class="btn btn-info" ng-click="openElement(a.posId)">Open remote</button>
+
+        <h3 ng-if="a.name!==undefined">{{a.name}}</h3>
+        <h3 ng-if="a.name==undefined"><text style="color:white">Error 404</text> </h3>
+
+
+        <!-- <button type="button" class="btn btn-sm btn-default" data:ng-click="display.fullScreen=true">Full screen</button> -->
+
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+<div ng-if="" class="wrapper col-md-12">
+  <div ng-if="elements.length == 0" style="padding:10px" class="thumbnail col-md-12">
+    <h3>Add VNC connections first.</h3>
+  </div>
+  <div class="col-md-6 col-lg-4" ng-repeat="n in elements" >
+
+    <div style="padding:10px" class="thumbnail">
+      <button type="button" class="close" data-dismiss="alert" data:ng-click="removeConnection($index)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      <h1>{{n.name}}</h1>
+      <vnc data:ng-init="display={width: '400',fitTo:'width'}; viewOnly=true; " data:view-only = "viewOnly" data:display="display" data:host="{{n.host}}" data:port="{{n.port}}" data:is-connected="true" data:password:"{{n.password}}"></vnc>
+      <br>
+      <button type="button" class="btn btn-sm btn-default" data:ng-click="display.fullScreen=true">Full screen</button>
+
+    </div>
+  </div>
+  <hr class="col-md-12" style="background-color:#5bc0de">
+  <div class="col-md-6 col-md-offset-3 thumbnail" style="padding:20px">
+    <div class="form-group">
+      <label for="host">Name</label>
+      <input type="text" id="host" class="form-control" placeholder="host" ng-model="input.name">
+    </div>
+    <div class="form-group">
+      <label for="host">Host</label>
+      <input type="text" id="host" class="form-control" placeholder="host" ng-model="input.host">
+    </div>
+
+    <!-- <div class="form-group">
+    <label for="path">Path</label>
+    <input type="text" id="path" class="form-control" placeholder="path" ng-model="input.path">
+  </div> -->
+
+  <div class="form-group">
+    <label for="port">Port</label>
+    <input type="text" id="port" class="form-control" placeholder="port / default: 44999" ng-model="input.port">
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="text" id="password" class="form-control" placeholder="password" ng-model="input.password">
+  </div>
+
+  <button class="btn btn-lg btn-info" ng-click="addConnection()">Add connection</button>
+</div>
+
+</div>
+
+<br><br><br>
+<!-- visina -->
+<!-- <pre ng-bind="horizontal | json"></pre> -->
+<!-- dolzina -->
+<!-- <pre ng-bind="selected | json"></pre> -->
+<!-- <pre ng-bind="vertical | json"></pre> -->
+<!-- <pre ng-bind="elements | json"></pre> -->
+<!-- <pre ng-bind="productionItems | json"></pre> -->
+
+
+<script type="text/ng-template" id="addNewTemplate.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Add template</h3>
+  </div>
+  <div class="modal-body">
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Name *:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="modalInput.name">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Horizontal *:</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" ng-model="modalInput.horizontal">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Vertical *:</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" ng-model="modalInput.vertical">
+      </div>
+    </div><br>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</script>
+<script type="text/ng-template" id="addNewElement.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Add element</h3>
+  </div>
+  <div class="modal-body">
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Name *:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="modalElementInput.name">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Host *:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="modalElementInput.host">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Port *:</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" ng-model="modalElementInput.port">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Password *:</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" ng-model="modalElementInput.password">
+      </div>
+    </div><br>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok1()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel1()">Cancel</button>
+  </div>
+</script>
+
+
+<script type="text/ng-template" id="openElement.html">
+  <div class="modal-header">
+    <h3 class="modal-title">{{selectedElement.name}}</h3>
+  </div>
+  <div class="modal-body">
+    <!-- <pre ng-bind="selectedElement | json"></pre> -->
+    <vnc data:ng-init="display={width: '400',fitTo:'width'}; viewOnly=true; connected=false;" data:view-only = "viewOnly" data:display="display" data:host="{{selectedElement.host}}" data:port="{{selectedElement.port}}" data:is-connected="connected"></vnc>
+
+    <br>
+    <button type="button" class="btn btn-sm btn-primary" data:ng-hide="connected" data:ng-click="connected=true">Connect</button>
+    <button type="button" class="btn btn-sm btn-danger" data:ng-hide="!connected" data:ng-click="connected=false">Disconnect</button>
+    <button type="button" class="btn btn-sm btn-default" data:ng-hide="!connected" data:ng-click="display.fullScreen=true">Full screen</button>
+
+    <hr>
+
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Name *:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="selectedElement.name">
+      </div>
+    </div><br><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Host *:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="selectedElement.host">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Port *:</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" ng-model="selectedElement.port">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <label class="col-sm-2 control-label">Password *:</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" ng-model="selectedElement.password">
+      </div>
+    </div><br>
+    <div style="margin-bottom:30px" class="form-group">
+      <button class="btn btn-primary pull-right" type="button" ng-click="saveChangesForElement()">Save changes</button>
+    </div><br>
+
+
+  </div>
+  <div class="modal-footer">
+    <!-- <button class="btn btn-primary" type="button" ng-click="ok()">OK</button> -->
+    <button class="btn btn-warning" type="button" ng-click="cancel2()">Exit</button>
+  </div>
+</script>
